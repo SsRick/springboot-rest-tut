@@ -1,5 +1,6 @@
 package com.rick.rest_tutorial.service.impl;
 
+import com.rick.rest_tutorial.exception.CloudVendorNotFoundException;
 import com.rick.rest_tutorial.model.CloudVendor;
 import com.rick.rest_tutorial.repository.CloudVendorRepository;
 import com.rick.rest_tutorial.service.CloudVendorService;
@@ -30,20 +31,16 @@ public class CloudVendorServiceImpl implements CloudVendorService {
 
     @Override
     public String deleteCloudVendor(String vendorId) {
-        if(cloudVendorRepository.findById(vendorId).isPresent()) {
-            cloudVendorRepository.deleteById(vendorId);
-            return "Success";
-        }
-        return "Failure";
+        cloudVendorRepository.deleteById(vendorId);
+        return "Success";
     }
 
     @Override
     public CloudVendor getCloudVendor(String vendorId) {
-        if(cloudVendorRepository.findById(vendorId).isPresent()) {
-            return cloudVendorRepository.findById(vendorId).get();
+        if(cloudVendorRepository.findById(vendorId).isEmpty()) {
+            throw new CloudVendorNotFoundException("Requested Cloud Vendor does not exist");
         }
-
-        return null;
+        return cloudVendorRepository.findById(vendorId).get();
     }
 
     @Override
